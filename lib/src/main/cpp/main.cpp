@@ -13,6 +13,8 @@
 // EGL
 #include <EGL/egl.h>
 #include <GLES3/gl3.h>
+// Dobby
+#include "dobby.h"
 
 using zygisk::Api;
 using zygisk::AppSpecializeArgs;
@@ -83,8 +85,14 @@ REGISTER_ZYGISK_MODULE(MyModule)
 void (*inputOrigin)(void *thiz, void* event, void* msg);
 
 // EGLSWAPBUFFER HANDLER
-EGLBoolean (*eglSwapBuffer)(EGLDisplay eglDpy, EGLSurface eglSrf);
+EGLBoolean (*eglSwapBufferOrig)(EGLDisplay eglDpy, EGLSurface eglSrf);
+EGLBoolean eglSwapBufferHook(EGLDisplay eglDpy, EGLSurface eglSrf) {
+    EGLint(width, height);
+    eglQuerySurface(eglDpy, eglSrf, EGL_WIDTH, &width);
+    eglQuerySurface(eglDpy, eglSrf, EGL_HEIGHT, &height);
 
+    return eglSwapBufferOrig(eglDpy, eglSrf);
+}
 // INJECT OUR MENU
 void inject(const char *targetProcessName) {
     // HOOK INPUT SYMBOL
@@ -92,7 +100,7 @@ void inject(const char *targetProcessName) {
 
     // HOOK EGLSWAPBUFFER
     DobbySymbolResolver("libEGL.so", "eglSwapBuffers");
-
+    
 }
 
 // -- END HOOK IMGUI
