@@ -83,7 +83,7 @@ REGISTER_ZYGISK_MODULE(MyModule)
 void (*inputOrigin)(void *thiz, void* event, void* msg);
 
 // EGLSWAPBUFFER HANDLER
-EGLBoolean (*eglSwapBuffer)(EGLDispaly eglDpy, EGLSurface eglSrf);
+EGLBoolean (*eglSwapBuffer)(EGLDisplay eglDpy, EGLSurface eglSrf);
 
 // INJECT OUR MENU
 void inject(const char *targetProcessName) {
