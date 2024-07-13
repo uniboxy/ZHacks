@@ -22,7 +22,7 @@ using zygisk::ServerSpecializeArgs;
 
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, "MyModule", __VA_ARGS__)
 
-static int width, height;
+// static int width, height;
 
 // -- ZYGISK
 
@@ -74,6 +74,9 @@ private:
 
 // Register our module class
 REGISTER_ZYGISK_MODULE(MyModule)
+
+// Draw menu
+void ModMenu(int width, int height);
 
 // -- end ZYGISK
 
