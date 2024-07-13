@@ -95,11 +95,13 @@ void inputHook(void *thiz, void *event, void *msg) {
 // EGLSWAPBUFFER HANDLER
 EGLBoolean (*eglSwapBufferOrig)(EGLDisplay eglDpy, EGLSurface eglSrf);
 EGLBoolean eglSwapBufferHook(EGLDisplay eglDpy, EGLSurface eglSrf) {
+	/*
     EGLint(width, height);
     eglQuerySurface(eglDpy, eglSrf, EGL_WIDTH, &width);
     eglQuerySurface(eglDpy, eglSrf, EGL_HEIGHT, &height);
 
     return eglSwapBufferOrig(eglDpy, eglSrf);
+	*/
 }
 // INJECT OUR MENU
 void inject(const char *targetProcessName) {
