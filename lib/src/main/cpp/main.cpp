@@ -6,6 +6,13 @@
 #include <cstring>
 #include <thread>
 #include "zygisk.hpp"
+// ImGui
+#include "imgui.h"
+#include "imgui_impl_android.h"
+#include "imgui_impl_opengl3.h"
+// EGL
+#include <EGL/egl.h>
+#include <GLES3/gl3.h>
 
 using zygisk::Api;
 using zygisk::AppSpecializeArgs;
@@ -70,9 +77,13 @@ REGISTER_ZYGISK_MODULE(MyModule)
 // -- HOOK IMGUI
 
 // INPUT HANDLER
+/* android::InputConsumer::initializeMotionEvent(android::MotionEvent*, android::InputMessage const*)
+ * void InputConsumer::initializeMotionEvent(MotionEvent* event, const InputMessage* msg)
+ */
+void (*inputOrigin)(void *thiz, void* event, void* msg);
 
 // EGLSWAPBUFFER HANDLER
-
+EGLBoolean (*eglSwapBuffer)(EGLDispaly eglDpy, EGLSurface eglSrf);
 
 // INJECT OUR MENU
 void inject(const char *targetProcessName) {
