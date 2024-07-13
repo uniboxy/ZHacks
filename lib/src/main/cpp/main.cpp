@@ -34,7 +34,7 @@ public:
 
     void postAppSpecialize(const AppSpecializeArgs *) override {
         if (createThread) {
-            std::thread hackThread(inject, gameDataDir, targetProcessName);
+            std::thread hackThread(inject, gameDataDir);
             LOGD("Thread created");
         }
         
