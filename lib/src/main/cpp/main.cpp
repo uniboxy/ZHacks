@@ -22,6 +22,7 @@ using zygisk::ServerSpecializeArgs;
 
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, "MyModule", __VA_ARGS__)
 
+static int width, height;
 
 // -- ZYGISK
 
