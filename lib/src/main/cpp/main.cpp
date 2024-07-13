@@ -34,7 +34,7 @@ public:
 
     void postAppSpecialize(const AppSpecializeArgs *) override {
         if (createThread) {
-            std::thread hackThread(inject, targetProcessName);
+            std::thread hackThread(inject, gameDataDir, targetProcessName);
             LOGD("Thread created");
         }
         
@@ -44,7 +44,7 @@ private:
     Api *api;
     JNIEnv *env;
     bool createThread = false;
-
+    char *gameDataDir;
 
     void preSpecialize(const char *processName, const char *appDataDir) {
         
@@ -52,6 +52,9 @@ private:
         if (strcmp(processName, targetProcessName) == 0) {
             LOGD("Success, setup a thread");
             createThread = true;
+            gameDataDir = new char[strlen(appDataDir) + 1];
+            strcpy(gameDataDir, appDataDir);
+
         } else {
             LOGD("Skip, process unknown");
         }
