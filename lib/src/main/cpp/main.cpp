@@ -82,7 +82,11 @@ REGISTER_ZYGISK_MODULE(MyModule)
 /* android::InputConsumer::initializeMotionEvent(android::MotionEvent*, android::InputMessage const*)
  * void InputConsumer::initializeMotionEvent(MotionEvent* event, const InputMessage* msg)
  */
-void (*inputOrigin)(void *thiz, void* event, void* msg);
+void (*inputOrig)(void *thiz, void* event, void* msg);
+void inputHook(void *thiz, void *event, void *msg) {
+    inputOrig(thiz, event, msg);
+    ImGui_ImplAndroid_HandleInputEvent((AInputEvent *), thiz);
+} 
 
 // EGLSWAPBUFFER HANDLER
 EGLBoolean (*eglSwapBufferOrig)(EGLDisplay eglDpy, EGLSurface eglSrf);
