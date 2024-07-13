@@ -111,7 +111,7 @@ void drawImGui() {
 void (*inputOrig)(void* thiz, void* event, void* msg);
 void inputHook(void *thiz, void *event, void *msg) {
     inputOrig(thiz, event, msg);
-    ImGui_ImplAndroid_HandleInputEvent((AInputEvent *), thiz);
+    ImGui_ImplAndroid_HandleInputEvent((AInputEvent *)thiz);
 } 
 
 // EGLSWAPBUFFER HANDLER
@@ -119,8 +119,8 @@ EGLBoolean (*eglSwapBufferOrig)(EGLDisplay display, EGLSurface surface);
 EGLBoolean eglSwapBufferHook(EGLDisplay display, EGLSurface surface) {
     eglQuerySurface(display, surface, EGL_WIDTH, &width);
     eglQuerySurface(display, surface, EGL_HEIGHT, &height);
-	if (!drawImGui) {
-		modMenu();
+	if (!setupImGui) {
+		drawImGui();
 		setupImGui = true;
 	}
 	ImGuiIO &io = GetIO();
