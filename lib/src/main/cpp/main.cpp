@@ -87,7 +87,12 @@ EGLBoolean (*eglSwapBuffer)(EGLDisplay eglDpy, EGLSurface eglSrf);
 
 // INJECT OUR MENU
 void inject(const char *targetProcessName) {
-    // HOOK SYMBOL
+    // HOOK INPUT SYMBOL
+    DobbySymbolResolver("libinput.so", "_ZN7android13InputConsumer21initializeMotionEventEPNS_11MotionEventEPKNS_12InputMessageE");
+
+    // HOOK EGLSWAPBUFFER
+    DobbySymbolResolver("libEGL.so", "eglSwapBuffers");
+
 }
 
 // -- END HOOK IMGUI
