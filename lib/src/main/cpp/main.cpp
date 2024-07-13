@@ -22,7 +22,7 @@ using zygisk::ServerSpecializeArgs;
 
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, "MyModule", __VA_ARGS__)
 
-// static int width, height;
+static int width, height;
 
 // -- ZYGISK
 
@@ -75,10 +75,32 @@ private:
 // Register our module class
 REGISTER_ZYGISK_MODULE(MyModule)
 
-// Draw menu
-void ModMenu(int width, int height);
-
 // -- end ZYGISK
+
+// Draw ImGui Menu
+using namespace ImGui;
+bool setupImGui;
+bool exampleCheckbox;
+void modMenu() {
+	Begin("Mod Menu");
+	ImGuiTabBarFlags tabBarFlags = ImGuiTabBarFlags_FittingPolicyResizeDown;
+	if (BeginTabBar("Menu", tabBarFlags)) {
+		if (BeginTabItem("Player")) {
+			Checkbox("This is checkbox", &exampleCheckbox);
+			EndTabItem();
+		}
+		EndTabItem();
+	}
+}
+void drawImGui() {
+	IMGUI_CHECKVERSION();
+	CreateContext();
+	ImGuiIO &io = GetIO();
+	io.DisplaySize = ImVec2((float) width, (float) height);
+	ImGui_ImplOpenGL3_Init("#version 300");
+	StyleColorsDark(); // Default
+	GetStyle().ScaleAllSizes(10.0f);
+}
 
 // -- HOOK IMGUI
 
@@ -86,23 +108,32 @@ void ModMenu(int width, int height);
 /* android::InputConsumer::initializeMotionEvent(android::MotionEvent*, android::InputMessage const*)
  * void InputConsumer::initializeMotionEvent(MotionEvent* event, const InputMessage* msg)
  */
-void (*inputOrig)(void *thiz, void* event, void* msg);
+void (*inputOrig)(void* thiz, void* event, void* msg);
 void inputHook(void *thiz, void *event, void *msg) {
     inputOrig(thiz, event, msg);
     ImGui_ImplAndroid_HandleInputEvent((AInputEvent *), thiz);
 } 
 
 // EGLSWAPBUFFER HANDLER
-EGLBoolean (*eglSwapBufferOrig)(EGLDisplay eglDpy, EGLSurface eglSrf);
-EGLBoolean eglSwapBufferHook(EGLDisplay eglDpy, EGLSurface eglSrf) {
-	/*
-    EGLint(width, height);
-    eglQuerySurface(eglDpy, eglSrf, EGL_WIDTH, &width);
-    eglQuerySurface(eglDpy, eglSrf, EGL_HEIGHT, &height);
-
-    return eglSwapBufferOrig(eglDpy, eglSrf);
-	*/
+EGLBoolean (*eglSwapBufferOrig)(EGLDisplay display, EGLSurface surface);
+EGLBoolean eglSwapBufferHook(EGLDisplay display, EGLSurface surface) {
+    eglQuerySurface(display, surface, EGL_WIDTH, &width);
+    eglQuerySurface(display, surface, EGL_HEIGHT, &height);
+	if (!drawImGui) {
+		modMenu();
+		setupImGui = true;
+	}
+	ImGuiIO &io = GetIO();
+	ImGui_ImplOpenGL3_NewFrame();
+	NewFrame();
+	modMenu();
+	EndFrame();
+	Render();
+	glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    return eglSwapBufferOrig(display, surface);	
 }
+
 // INJECT OUR MENU
 void inject(const char *targetProcessName) {
     // HOOK INPUT SYMBOL
@@ -110,7 +141,6 @@ void inject(const char *targetProcessName) {
 
     // HOOK EGLSWAPBUFFER
     DobbySymbolResolver("libEGL.so", "eglSwapBuffers");
-    
 }
 
 // -- END HOOK IMGUI
